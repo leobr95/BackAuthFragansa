@@ -1,0 +1,83 @@
+############################
+# SISTEMA / EDITORES
+############################
+
+# Mac / Linux
+.DS_Store
+Thumbs.db
+
+# VS / Rider / VS Code
+.vs/
+.idea/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+.vscode/
+*.code-workspace
+
+############################
+# BUILD / COMPILACIÓN .NET
+############################
+
+bin/
+obj/
+[Bb]uild/
+[Ll]og/
+[Ll]ogs/
+[Tt]estResults/
+[Aa]rtifacts/
+*.log
+
+# Coverage
+*.coverage
+*.coveragexml
+.coverage/
+coverage/
+
+############################
+# PUBLICACIÓN
+############################
+
+# Salidas de publish
+**/publish/
+**/out/
+
+############################
+# PAQUETES / HERRAMIENTAS
+############################
+
+# NuGet
+*.nupkg
+*.snupkg
+.packages/
+.nuget/
+
+# dotnet tools locales
+.dotnet-tools/
+
+############################
+# DOCKER
+############################
+
+docker-compose.override.yml
+*.dockerfile.local
+
+############################
+# CONFIGURACIÓN SENSIBLE
+############################
+
+# Si quieres que appsettings de prod no se suba:
+# (recomendado: deja solo appsettings.json de ejemplo)
+appsettings.Development.json
+appsettings.Local.json
+appsettings.*.local.json
+secrets.json
+
+############################
+# MIGRACIONES (OPCIONAL)
+############################
+# Normalmente LAS migraciones sí se suben.
+# Descomenta si en algún proyecto quieres ignorarlas:
+# **/Migrations/
