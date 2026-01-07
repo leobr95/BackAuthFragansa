@@ -1,14 +1,37 @@
-version: "3.8"
 services:
-  pg-auth:
-    image: postgres:16
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: auth-sqlserver
     environment:
-      POSTGRES_USER: auth_user
-      POSTGRES_PASSWORD: auth_pass
-      POSTGRES_DB: auth_db
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: "Your_password123!"
     ports:
-      - "5433:5432"
+      - "1433:1433"
     volumes:
-      - pgdata-auth:/var/lib/postgresql/data
+      - mssql-data:/var/opt/mssql
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P 'Your_password123!' -Q 'SELECT 1' || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+
+  auth-api:
+    build:
+      context: .
+      dockerfile: Auth.Api/Dockerfile
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+    environment:
+      ASPNETCORE_ENVIRONMENT: "Development"
+      ConnectionStrings__AuthDb: "Server=sqlserver,1433;Database=AuthDb;User Id=sa;Password=Your_password123!;TrustServerCertificate=true;Encrypt=false"
+      Jwt__Secret: "CHANGE_ME_TO_A_LONG_RANDOM_SECRET_64+CHARS"
+      Jwt__Issuer: "AuthService"
+      Jwt__Audience: "DebtsService"
+      Jwt__AccessTokenMinutes: "60"
+      Jwt__RefreshTokenDays: "7"
+    ports:
+      - "5267:8080"
+
 volumes:
-  pgdata-auth:
+  mssql-data:

@@ -22,8 +22,12 @@ public static class InfrastructureRegistration
 
     public static IServiceCollection AddAuthData(this IServiceCollection services, IConfiguration cfg)
     {
+        var cs = cfg.GetConnectionString("AuthDb")
+                 ?? throw new InvalidOperationException("ConnectionStrings:AuthDb missing");
+
         services.AddDbContext<UsersDbContext>(o =>
-            o.UseNpgsql(cfg.GetConnectionString("AuthDb")));
+            o.UseSqlServer(cs));
+
         services.AddScoped<IUserRepository, EfUserRepository>();
         return services;
     }

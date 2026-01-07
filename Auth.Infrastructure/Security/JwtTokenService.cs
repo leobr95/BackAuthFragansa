@@ -1,5 +1,6 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 using Auth.Application.Interfaces;
 using Auth.Domain.Entities;
@@ -22,6 +23,7 @@ public class JwtTokenService : IJwtTokenGenerator
         _audience = cfg["Jwt:Audience"] ?? "debts";
         _accessLifetime = TimeSpan.FromMinutes(int.TryParse(cfg["Jwt:AccessTokenMinutes"], out var m) ? m : 60);
         _refreshLifetime = TimeSpan.FromDays(int.TryParse(cfg["Jwt:RefreshTokenDays"], out var d) ? d : 7);
+
         var secret = cfg["Jwt:Secret"] ?? throw new InvalidOperationException("Jwt:Secret missing");
         _key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret));
     }
@@ -56,10 +58,16 @@ public class JwtTokenService : IJwtTokenGenerator
 
     public (string refreshToken, DateTime expiresAt) CreateRefreshToken()
     {
-        var token = Convert.ToBase64String(Guid.NewGuid().ToByteArray()) + Convert.ToBase64String(Guid.NewGuid().ToByteArray());
+        // token real aleatorio
+        var bytes = RandomNumberGenerator.GetBytes(64);
+        var token = Convert.ToBase64String(bytes);
         return (token, DateTime.UtcNow.Add(_refreshLifetime));
     }
 
     public string HashRefreshToken(string token)
-        => BCrypt.Net.BCrypt.HashPassword(token);
+    {
+        // determinístico: SHA256(token) -> Base64
+        var bytes = SHA256.HashData(Encoding.UTF8.GetBytes(token));
+        return Convert.ToBase64String(bytes);
+    }
 }

@@ -60,7 +60,7 @@ var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret));
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(o =>
     {
-        o.RequireHttpsMetadata = true;
+        o.RequireHttpsMetadata = false;
         o.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuer = true,
@@ -79,7 +79,7 @@ builder.Services.AddAuthorization();
 
 // CORS dev
 builder.Services.AddCors(o => o.AddPolicy("AllowLocal", p => p
-    .WithOrigins("http://localhost:3000","http://localhost:5173", "http://localhost:3002")
+    .WithOrigins("https://catalog-front-murex.vercel.app", "http://localhost:3000", "http://localhost:5173", "http://localhost:3002", "https://fragansa-movies.vercel.app")
     .AllowAnyHeader().AllowAnyMethod()));
 
 var app = builder.Build();
